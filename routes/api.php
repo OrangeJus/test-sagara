@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,15 +16,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/hay', function(){
-//     return 'Hello world';
-// });
+// Public routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
-// Route::get('products', [ProductController::class, 'index']);
-// Route::post('products', [ProductController::class, 'store']);
+// Protected routes
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::get('/products/search/{name}', [ProductController::class, 'search']);
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
-// Jika hanya ingin membuat aplikasi biasa kita bisa menggunakan resource
-Route::resource('products', ProductController::class);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
